@@ -12,7 +12,10 @@ You can install Memento using pip
 pip install memento-scorecard
 ```
 
-## Template
+## Documentation
+Check out the official documentation: https://guilliu.github.io
+
+## Simple template
 ```python
 # Import the modules
 import numpy as np, pandas as pd, memento as me
@@ -21,7 +24,7 @@ import numpy as np, pandas as pd, memento as me
 from sklearn.datasets import load_breast_cancer as lbc
 X, y = pd.DataFrame(lbc().data, columns=lbc().feature_names), lbc().target 
 
-# Apply scorecard
+# Get the auto-scorecard
 model = me.scorecard().fit(X, y)
 
 # Display the scorecard
@@ -29,10 +32,7 @@ me.pretty_scorecard(model)
 ```
 
 ## Examples
-In the folder `/examples` there are notebooks that explore different use cases in more detail.
-
-## Documentation
-Check out the official documentation: https://guilliu.github.io/
+In the folder `/examples` there are notebooks that explore different use cases in detail.
 
 ## Code style
 The code tries to be as minimalist as possible. The maximum characters per line is set to 100, since the 80 characters of the PEP 8 standard are considered worse for readability. For all other questions, it is recommended to follow the PEP 8 standards, with a slight preference for the use of single quotes.
