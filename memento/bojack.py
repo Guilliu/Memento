@@ -29,6 +29,7 @@ class scorecard:
         autogrp_min_pct=0.05,
         autogrp_dict_max_groups={},
         autogrp_dict_min_pct={},
+        autogrp_dict_manual_types={},
 
         features=[],
         excluded_vars=[],
@@ -44,11 +45,12 @@ class scorecard:
         selection_check_overfitting=True,
         
         user_breakpoints={},
+        logistic_method = 'newton',
 
         id_columns=[],
         save_tables='features',
         save_autogroupings='features'
-
+        
     ):
 
         self.test_seed = test_seed
@@ -62,6 +64,7 @@ class scorecard:
         self.autogrp_min_pct = autogrp_min_pct
         self.autogrp_dict_max_groups = autogrp_dict_max_groups
         self.autogrp_dict_min_pct = autogrp_dict_min_pct
+        self.autogrp_dict_manual_types = autogrp_dict_manual_types
         
         self.features = features
         self.excluded_vars = excluded_vars
@@ -77,11 +80,12 @@ class scorecard:
         self.selection_check_overfitting = selection_check_overfitting
 
         self.user_breakpoints = user_breakpoints
-
+        self.logistic_method = logistic_method
+        
         self.id_columns = id_columns
         self.save_tables = save_tables
         self.save_autogroupings = save_autogroupings
-
+        
 
     def fit(self, X, y):
 
@@ -167,12 +171,17 @@ class scorecard:
                     min_pct = self.autogrp_dict_min_pct[variable]
                 else: min_pct = self.autogrp_min_pct
 
+                if variable in self.autogrp_dict_manual_types: 
+                    manual_type = self.autogrp_dict_manual_types[variable]
+                else: manual_type = ''
+
                 x = X_train[variable].values
-                frenken = autogrouping(max_groups=max_groups, min_pct=min_pct).fit(x, y_train)
+                frenken = autogrouping(max_groups=max_groups, 
+                min_pct=min_pct, manual_type=manual_type).fit(x, y_train)
 
                 if len(frenken.breakpoints_num) == 0: variables_no_agrupadas_error.append(variable)
                 else: autogroupings[variable] = frenken
- 
+                
             except:
                 variables_no_agrupadas_error.append(variable)
 
@@ -216,13 +225,15 @@ class scorecard:
         threshold=self.selection_threshold, stop_ks_gini=self.selection_stop_ks_gini,
         max_iters=self.selection_max_iters, included_vars=self.included_vars,
         muestra_test=df_test, show=self.selection_show, 
-        check_overfitting=self.selection_check_overfitting)
+        check_overfitting=self.selection_check_overfitting,
+        logistic_method=self.logistic_method)
 
         df_train = df_train[features + ['target_4815162342']]
         df_test = df_test[features + ['target_4815162342']]
 
         scorecard, features_length, pvalues, coefs = compute_scorecard(
-        df_train, features, info, pvalues=True, ret_coefs=True)
+        df_train, features, info, pvalues=True, 
+        ret_coefs=True, logistic_method=self.logistic_method)
 
         df_train_final = apply_scorecard(df_train, scorecard, info, 'target_4815162342')
         ks_train, gini_train = compute_metrics(df_train_final, 'target_4815162342', ['gini', 'ks'])
@@ -390,7 +401,7 @@ class scorecard:
             aux = 'CASE '
             points = list(self.scorecard[self.scorecard['Variable'] == i]['Aligned score'])
             groups = copy.deepcopy(list(self.scorecard[self.scorecard['Variable'] == i]['Group']))
-
+            
             for j in range(len(groups)):
 
                 if self.autogroupings[i].dtype not in ('object', 'bool'):
@@ -405,7 +416,12 @@ class scorecard:
 
                 else:
                     if 'Missing' in groups[j]:
-                        aux += 'WHEN (isnan({}) OR ({} IS NULL)) THEN {} '.format(i, i, points[j])
+                        todos = [aaa for bbb in groups for aaa in bbb] # CAMBIAR
+                        if True in todos or False in todos: # CAMBIAR
+                            aux += 'WHEN {} IS NULL THEN {} '.format(i, points[j]) # CAMBIAR
+                        else: # CAMBIAR
+                            aux += 'WHEN (isnan({}) OR ({} IS NULL)) THEN {} '\
+                            .format(i, i, points[j]) # CAMBIAR
                     try: groups[j].remove('Missing')
                     except: pass
                     if groups[j] != []: 
@@ -419,7 +435,8 @@ class scorecard:
         self.pyspark_formula = pyspark_formula
 
         
-    def create_pmml(self, nombre_archivo, nombre_modelo='mew', score_name='scorecardpoints'):
+    def create_pmml(self, nombre_archivo, 
+    nombre_modelo='mew', score_name='scorecardpoints', reasons_code=True):
 
         import copy
 
@@ -442,68 +459,96 @@ class scorecard:
                 tipo2 = 'categorical'
             else: 
                 raise Exception('WTF, qué tipo de datos tiene {}: '\
-                    .format(feature), str(objeto.dtype))
+                .format(feature), str(objeto.dtype))
             texto += '<DataField name="{}" dataType="{}" optype="{}"/>\n'\
             .format(feature, tipo1, tipo2)
         
-        texto += '<DataField name="{}" dataType="double" optype="continuous"/>\n'.format(score_name)
+        min_score = min(self.scorecard['Aligned score'])
+        texto += '<DataField name="{}" dataType="integer" ' +\
+        'optype="continuous"/>\n'.format(score_name)
         texto += '</DataDictionary>\n'
-        texto += '<Scorecard modelName="{}" functionName="regression" '\
-        'useReasonCodes="false" initialScore="0">\n'.format(nombre_modelo)
+        if reasons_code:
+            texto += '<Scorecard modelName="{}" functionName="regression" initialScore="0" ' +\
+            'useReasonCodes="true" reasonCodeAlgorithm="pointsAbove" ' +\
+            'baselineScore="{}">\n'.format(nombre_modelo, min_score)
+        else:
+            texto += '<Scorecard modelName="{}" functionName="regression" ' +\
+            'initialScore="0" useReasonCodes="false">\n'.format(nombre_modelo, min_score)
         texto += '<MiningSchema>\n'
 
         for feature in self.features:
-            texto += '<MiningField name="{}" usageType="active" '\
+            texto += '<MiningField name="{}" usageType="active" ' +\
             'invalidValueTreatment="asMissing"/>\n'.format(feature)
 
         texto += '<MiningField name="{}" usageType="predicted"/>\n'.format(score_name)
         texto += '</MiningSchema>\n'
+        if reasons_code:
+            texto += '<Output>\n'
+            contador = 1
+            for i in self.features:
+                texto += '<OutputField name="reasoncode_{}" rank="{}" feature="reasonCode" ' +\
+                'dataType="string" optype="categorical"/>\n'.format(contador, contador)
+                contador += 1
+            texto += '</Output>\n'     
         texto += '<Characteristics>\n'
-
+        contador = 1
         for i in self.features:
+            
+            contador += 1
             aux = '<Characteristic name="{}">\n'.format(i)
             points = list(self.scorecard[self.scorecard['Variable'] == i]['Aligned score'])
             groups = copy.deepcopy(list(self.scorecard[self.scorecard['Variable'] == i]['Group']))
-
+            
             for j in range(len(points)):
                 
-                aux += '<Attribute partialScore="{}">\n'.format(points[j])
+                if reasons_code: 
+                    aux += '<Attribute partialScore="{}" ' +\
+                    'reasonCode="{}_{}">\n'.format(points[j], i, j+1)
+                else: aux += '<Attribute partialScore="{}">\n'.format(points[j])
                 
                 if self.autogroupings[i].dtype not in ('object', 'bool'):
   
                     if 'Missing' in groups[j]:
-                        aux += '<CompoundPredicate booleanOperator="or">\n'
+                        if len(groups[j]) > 7: aux += '<CompoundPredicate booleanOperator="or">\n'
                         aux += '<SimplePredicate field="{}" operator="isMissing"/>\n'.format(i)
                     if 'inf)' not in groups[j] and groups[j] != 'Missing':
                         lim = groups[j].split(', ')[1][:-1]
-                        aux += '<SimplePredicate field="{}" operator="lessThan" value="{}"/>\n'\
-                        .format(i, lim)
+                        aux += '<SimplePredicate field="{}" operator="lessThan" ' +\
+                        'value="{}"/>\n'.format(i, lim)
                     if 'inf)' in groups[j]:
                         lim = groups[j].split(', ')[0][1:]
-                        aux += '<SimplePredicate field="{}" operator="greaterOrEqual" '\
+                        aux += '<SimplePredicate field="{}" operator="greaterOrEqual" ' +\
                         'value="{}"/>\n'.format(i, lim)
-                    if 'Missing' in groups[j]:
+                    if 'Missing' in groups[j] and len(groups[j]) > 7:
                         aux += '</CompoundPredicate>\n'
         
                 else:
                 
-                    aux += '<CompoundPredicate booleanOperator="or">\n'
+                    if len(groups[j]) > 1:
+                        aux += '<CompoundPredicate booleanOperator="or">\n'
                     for k in groups[j]:
                         if k != 'Missing':
-                            aux += '<SimplePredicate field="{}" operator="equal" '\
+                            aux += '<SimplePredicate field="{}" operator="equal" ' +\
                             'value="{}"/>\n'.format(i, k)
                         else:
                             aux += '<SimplePredicate field="{}" operator="isMissing"/>\n'.format(i)
-                    aux += '</CompoundPredicate>\n'
-                    
-                aux+='</Attribute>\n'
+                    if len(groups[j]) > 1:
+                        aux += '</CompoundPredicate>\n'
+            
+                aux += '</Attribute>\n'
+            if reasons_code: 
+                aux += '<Attribute partialScore="{}" ' +\
+                'reasonCode="{}_{}">\n'.format(min(points), i, 404)
+            else: aux += '<Attribute partialScore="{}">\n'.format(min(points))
+            aux += '<True/>\n'
+            aux += '</Attribute>\n'
             aux += '</Characteristic>\n'
             texto += aux
         texto += '</Characteristics>\n'
         texto += '</Scorecard>\n'
-        texto += '</PMML>\n'
+        texto += '</PMML>'
         
-        with open('{}'.format(nombre_archivo), 'w') as f: f.write(texto[1:-1])
+        with open('{}'.format(nombre_archivo), 'w') as f: f.write(texto)
     
         
     def predict(self, data, target_name='', keep_columns=[], binary_treshold=0.0):
@@ -548,15 +593,17 @@ class scorecard:
 class autogrouping:
 
 
-    def __init__(self, max_groups=5, min_pct=0.05):
+    def __init__(self, max_groups=5, min_pct=0.05, manual_type=''):
 
         self.max_groups = max_groups
         self.min_pct = min_pct
+        self.manual_type = manual_type
 
 
     def fit(self, x, y):
-
-        dtype = x.dtype
+        
+        if self.manual_type != '': dtype = self.manual_type
+        else: dtype = x.dtype
 
         if dtype not in ('O', 'bool'): categories = {}
 
@@ -680,5 +727,4 @@ class autogrouping:
             error = (g == 0) | (b == 0)
 
         self.breakpoints_num = breakpoints_num
-        
-        
+

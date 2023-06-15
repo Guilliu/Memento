@@ -137,7 +137,7 @@ def metrics_pyspark(data, target_name, metrics, print_log=False, score_name='sco
     import pyspark.sql.functions as sf
     from pyspark.sql.types import DoubleType
     from pyspark.ml.evaluation import BinaryClassificationEvaluator
-    
+
     if metrics not in (['ks'], ['gini'], ['ks', 'gini'], ['gini', 'ks']):
         raise ValueError("Valor erroneo para 'metrics'. Los valores "
         "váidos son: ['ks'], ['gini'], ['ks', 'gini'], ['gini', 'ks']")
@@ -226,7 +226,21 @@ def load_model(name):
     pickle_file = open(name, 'rb')
     obj = _pickle.load(pickle_file)
     pickle_file.close()
+    
     return obj
+
+
+def genera_punt_par(df, features):
+    
+    import pyspark.sql.functions as sf
+    
+    for feature in features:
+        condition = 'sf'
+        for rc in [i for i in dfOut.columns if 'reasoncode_' in i]:
+            condition += ".when(sf.col('{}').contains('{}'), sf.col('{}'))".format(rc, feature, rc)
+        df = df.withColumn('grp_{}'.format(feature), eval(condition))
+    
+    return df
 
 
 def proc_freq(data, row, col='', weight='', decimals=None, cumulative=False,

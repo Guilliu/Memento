@@ -88,8 +88,6 @@ def compute_table(x, y, breakpoints_num, group_names, compute_totals=True):
 
 def transform_to_woes(x, y, breakpoints_num):
 
-    ''' Transforma a woes los valores de una columna numérica dado sus breakpoints. '''
-
     x_groups = np.digitize(x, breakpoints_num)
 
     ngroups = len(breakpoints_num) + 1
@@ -129,7 +127,7 @@ def calib_score(points, num_variables, intercept):
 
 
 def compute_scorecard(data, features, info, target_name='target_4815162342',
-pvalues=False, ret_coefs=False, redondeo=True):
+pvalues=False, ret_coefs=False, redondeo=True, logistic_method='newton'):
 
     X = data.drop(target_name, axis=1).copy()
     y = data[target_name].values
@@ -150,7 +148,7 @@ pvalues=False, ret_coefs=False, redondeo=True):
 
         Xwoes[feature] = transform_to_woes(x, y, breakpoints_num)
 
-    log_reg = sm.Logit(y, sm.add_constant(Xwoes.values)).fit(disp=0)
+    log_reg = sm.Logit(y, sm.add_constant(Xwoes.values)).fit(method=logistic_method, disp=0)
     coefs, intercept = np.array([log_reg.params[1:]]), np.array([log_reg.params[0]])
 
     scorecard['Raw score'] = scorecard['WoE'] * np.repeat(coefs.ravel(), features_length)

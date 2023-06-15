@@ -41,7 +41,8 @@ def compute_info(X, variables, breakpoints):
 
 def features_selection(data, features, var_list, info, target_name='target_4815162342',
 method='stepwise', metric='pvalue', threshold=0.01, stop_ks_gini=True, 
-max_iters=14, included_vars=[], muestra_test=None, show='gini', check_overfitting=True):
+max_iters=14, included_vars=[], muestra_test=None, show='gini',
+check_overfitting=True, logistic_method='newton'):
     
     # if log_file: file_prints = open('log_modelo.txt', 'a')
     # else: file_prints = None
@@ -70,7 +71,7 @@ max_iters=14, included_vars=[], muestra_test=None, show='gini', check_overfittin
             
             try:
                 scorecard, features_length = compute_scorecard(
-                data, [var], info, target_name=target_name)
+                data, [var], info, target_name=target_name, logistic_method=logistic_method)
                 data_final = apply_scorecard(data, scorecard, info, target_name)
                 gini_train = compute_metrics(data_final, target_name, ['gini'])
                 if not isinstance(muestra_test, type(None)):
@@ -100,7 +101,7 @@ max_iters=14, included_vars=[], muestra_test=None, show='gini', check_overfittin
             if metric == 'pvalue':
 
                 scorecard, features_length, pvalues = compute_scorecard(
-                data, features, info, target_name=target_name, pvalues=True)
+                data, features, info, target_name=target_name, pvalues=True, logistic_method=logistic_method)
                 train_final = apply_scorecard(data, scorecard, info, target_name)
                 ks_train, gini_train = compute_metrics(train_final, target_name, ['ks', 'gini'])
                 if not isinstance(muestra_test, type(None)):
@@ -145,7 +146,7 @@ max_iters=14, included_vars=[], muestra_test=None, show='gini', check_overfittin
             else:
 
                 scorecard, features_length = compute_scorecard(
-                data, features, info, target_name=target_name)
+                data, features, info, target_name=target_name, logistic_method=logistic_method)
                 train_final = apply_scorecard(data, scorecard, info, target_name)
                 ks_train, gini_train = compute_metrics(train_final, target_name, ['ks', 'gini'])
                 if not isinstance(muestra_test, type(None)):
@@ -199,7 +200,7 @@ max_iters=14, included_vars=[], muestra_test=None, show='gini', check_overfittin
 
                         features.append(var)
                         scorecard, features_length = compute_scorecard(
-                        data, features, info, target_name=target_name)
+                        data, features, info, target_name=target_name, logistic_method=logistic_method)
                         data_final = apply_scorecard(data, scorecard, info, target_name)
                         metrica = compute_metrics(data_final, target_name, [metric])
                         aux.loc[contador] = [var, metrica]
@@ -211,7 +212,7 @@ max_iters=14, included_vars=[], muestra_test=None, show='gini', check_overfittin
                 features.append(new_var)
 
                 scorecard, features_length = compute_scorecard(
-                data, features, info, target_name=target_name)
+                data, features, info, target_name=target_name, logistic_method=logistic_method)
                 train_final = apply_scorecard(data, scorecard, info, target_name)
                 ks_train, gini_train = compute_metrics(train_final, target_name, ['ks', 'gini'])
                 
@@ -284,7 +285,7 @@ max_iters=14, included_vars=[], muestra_test=None, show='gini', check_overfittin
 
                         features.append(var)
                         scorecard, features_length, pvalues = compute_scorecard(
-                        data, features, info, target_name=target_name, pvalues=True)
+                        data, features, info, target_name=target_name, pvalues=True, logistic_method=logistic_method)
                         pvalue = pvalues[-1]
                         if pvalue == 0:
                             gini_auxiliar = compute_metrics(apply_scorecard(
@@ -307,7 +308,7 @@ max_iters=14, included_vars=[], muestra_test=None, show='gini', check_overfittin
                 features.append(new_var)
 
                 scorecard, features_length, pvalues = compute_scorecard(
-                data, features, info, target_name=target_name, pvalues=True)
+                data, features, info, target_name=target_name, pvalues=True, logistic_method=logistic_method)
                 new_pvalue = pvalues[-1]
                 train_final = apply_scorecard(data, scorecard, info, target_name)
                 ks_train, gini_train = compute_metrics(train_final, target_name, ['ks', 'gini'])
@@ -372,7 +373,7 @@ max_iters=14, included_vars=[], muestra_test=None, show='gini', check_overfittin
                     for v in to_delete:
                         features.remove(v)
                         scorecard, features_length = compute_scorecard(
-                        data, features, info, target_name=target_name)
+                        data, features, info, target_name=target_name, logistic_method=logistic_method)
                         train_final = apply_scorecard(data, scorecard, info, target_name)
                         ks_train, gini_train = compute_metrics(
                         train_final, target_name, ['ks', 'gini'])
@@ -422,7 +423,7 @@ max_iters=14, included_vars=[], muestra_test=None, show='gini', check_overfittin
     print('Selección terminada: {}'.format(features))
     print('-' * N)
 
-    return features
+    return features    
 
 
 def display_table_ng(modelo_newgroups, candidate_var, objeto, bp):
@@ -459,5 +460,4 @@ def reagrupa_var(modelo, variable, bp=[], decimals=4):
         print('-'*80)
         print('Agrupación propuesta:')
         display_table_ng(modelo, variable, objeto, bp)
-        
-        
+

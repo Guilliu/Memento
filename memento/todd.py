@@ -70,7 +70,7 @@ def remapeo_missing(v, bp, old_value=-12345678):
 def data_convert(x, categories):
 
     x_original = x
-    
+
     if x.dtype in ('O', 'bool'):
         if categories == {}:
             raise ValueError('En una variable de tipo texto o booleana '
@@ -80,7 +80,7 @@ def data_convert(x, categories):
         x_initial = x
         x = string_to_num(x, categories)
         x_converted = x
-    
+
     else:
         x_initial = x
         x_converted = x
