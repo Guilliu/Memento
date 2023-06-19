@@ -25,7 +25,7 @@ from sklearn.datasets import load_breast_cancer as lbc
 X, y = pd.DataFrame(lbc().data, columns=lbc().feature_names), lbc().target 
 
 # Get the auto-scorecard
-model = me.scorecard().fit(X, y)
+model = me.Scorecard().fit(X, y)
 
 # Display the scorecard
 me.pretty_scorecard(model)
