@@ -1,5 +1,5 @@
 # -------------------------------------------------------------------------------------------------
-# En este script se revela paso a paso el 'funcionamiento interno' de la clase scorecard en su
+# En este script se revela paso a paso el 'funcionamiento interno' de la clase Scorecard en su
 # modo automático.Usamos el mismo dataset del ejemplo 01 para ir comprobando los resultados.
 # -------------------------------------------------------------------------------------------------
 
@@ -13,21 +13,21 @@ X, y = pd.DataFrame(lbc().data, columns=lbc().feature_names), lbc().target
 # Sustituimos los espacios en blanco por guiones bajos en el nombre de las columnas
 X.columns = [i.replace(' ', '_') for i in X.columns]
 
-# Lo primero que hace la clase 'scorecard' es generar una partición train-test.
+# Lo primero que hace la clase 'Scorecard' es generar una partición train-test.
 # Por defecto hace un 70-30, estratificado en el target y con semilla
 from sklearn.model_selection import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(
 X, y, test_size=0.3, random_state=123, stratify=y)
 X_train, X_test = X_train.reset_index(drop=True), X_test.reset_index(drop=True)
 
-# Después, aplica la clase 'autogrouping' a todas las variables y guarda los objetos resultantes 
+# Después, aplica la clase 'Autogrouping' a todas las variables y guarda los objetos resultantes 
 # en un diccionario. Para generar estos buckets automáticos se usan árboles de decisión
 variables, autogroupings = X_train.columns, {}
 variables_no_agrupadas_error = []
 for variable in variables:
     try:
         x = X_train[variable].values
-        frenken = me.autogrouping().fit(x, y_train)
+        frenken = me.Autogrouping().fit(x, y_train)
         autogroupings[variable] = frenken
     except: variables_no_agrupadas_error.append(variable)
 
@@ -58,12 +58,12 @@ user_breakpoints = {}
 # de haber introducido agrupaciones manuales en user_breakpoints
 final_breakpoints = me.compute_final_breakpoints(variables_def, autogroupings, user_breakpoints)
 
-# Antes de calcular el modelo, la clase scorecard aplica un tratamiento a las columnas
+# Antes de calcular el modelo, la clase Scorecard aplica un tratamiento a las columnas
 info = me.compute_info(X_train, variables_def, final_breakpoints)
 df_train = me.adapt_data(X_train, y_train, variables_def, final_breakpoints, 'target')
 
 # Calculamos ya la scorecard, pero solo como tarjeta de puntuación 
-# en forma de DataFrame, el objeto tipo modelo se obtiene usando clase scorecard
+# en forma de DataFrame, el objeto tipo modelo se obtiene usando clase Scorecard
 
 scorecard, features_length = me.compute_scorecard(df_train, features, info, 'target')
 
@@ -77,7 +77,7 @@ df_test_final = me.apply_scorecard(df_test, scorecard, info, 'target')
 ks_test, gini_test = me.compute_metrics(df_test_final, 'target', ['gini', 'ks'], True)
 
 # No ha salido un mal modelo, también porque este ejemplo es MUY de juguete... 
-# La clase scorecard hace todo igual que hasta ahora salvo la selección de variables: 
+# La clase Scorecard hace todo igual que hasta ahora salvo la selección de variables: 
 # no elige las variables en función de su IV sino que se utilizan una de estas dos aproximaciones.
 # (Disclaimer: esto es algo muy teórico, no es necesario comprenderlo perfectamente ni mucho menos)
     
@@ -99,7 +99,7 @@ ks_test, gini_test = me.compute_metrics(df_test_final, 'target', ['gini', 'ks'],
 # cuando se alcanza el máximo número de pasos permitidos o cuando la métrica no mejora más de 
 # un umbral (0.20 para KS y 0.30 para Gini) la del paso anterior.
     
-# 2) Método 'stepwise' con métrica de 'p-valor' (configuración por defecto de la clase scorecard): 
+# 2) Método 'stepwise' con métrica de 'p-valor' (configuración por defecto de la clase Scorecard): 
 # Se realiza un forward como el anteriormente descrito, pero con algunas modificaciones. 
 # Se empieza buscando la variable que genera el modelo 1-variable en donde esta variable tiene el 
 # p-valor más bajo (los p-valores se calculan a nivel variable, no a nivel modelo). 

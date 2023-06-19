@@ -1,5 +1,5 @@
 # -------------------------------------------------------------------------------------------------
-# Este script muestra cómo sacar un modelo automático aplicando la clase scorecard a un dataset
+# Este script muestra cómo sacar un modelo automático aplicando la clase Scorecard a un dataset
 # -------------------------------------------------------------------------------------------------
 
 # Importamos los módulos
@@ -17,8 +17,8 @@ X.columns = [i.replace(' ', '_') for i in X.columns]
 # variables de texto, booleanas, con o sin missings... Funcionaría sin necesidad de tratamiento
 X.dtypes.unique()
 
-# Aplicamos la clase scorecard para sacar el modelo automático
-modelo = me.scorecard().fit(X, y)
+# Aplicamos la clase Scorecard para sacar el modelo automático
+modelo = me.Scorecard().fit(X, y)
 
 # Visualizamos la scorecard: si usas ventana interactiva en VSC con blanco como color de tema
 # puedes visualizarla con colores usando el método me.pretty_scorecard(), (debes tener instalado

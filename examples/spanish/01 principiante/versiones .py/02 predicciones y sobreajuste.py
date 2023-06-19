@@ -1,6 +1,6 @@
 # -------------------------------------------------------------------------------------------------
 # En este script vemos cómo usar los 'modelos entrenados' que produce 
-# la clase scorecard para hacer predicciones en dos datasets de Kaggle 😎
+# la clase Scorecard para hacer predicciones en dos datasets de Kaggle 😎
 # -------------------------------------------------------------------------------------------------
 
 # Importamos los módulos
@@ -13,7 +13,7 @@ print('Sobrevivieron {}. Murieron {} (entre ellos Leonardo DiCaprio)'.format(L[1
 X, y = df_train.drop('Survived', axis=1), df_train.Survived.values
 
 # Sacamos una primera scorecard excluyendo las variables 'PassengerId' y 'Name'
-modelo_titanic1 = me.scorecard(excluded_vars=['PassengerId', 'Name']).fit(X, y)
+modelo_titanic1 = me.Scorecard(excluded_vars=['PassengerId', 'Name']).fit(X, y)
 
 # Tremendo batacazo del train al test... Esto es un claro ejemplo de sobreajuste, de hecho,
 # el propio log del modelo nos avisa de que cuidado con 'Ticket'. Vemos que tiene sentido:
@@ -22,7 +22,7 @@ modelo_titanic1.tabla_ivs.head(3)
 print('Valores distintos variable Ticket: {}'.format(len(X['Ticket'].value_counts())))
 
 # Sacamos una segunda versión del modelo excluyendo esta variable 'Ticket'
-modelo_titanic2 = me.scorecard(excluded_vars=['PassengerId', 'Name', 'Ticket']).fit(X, y)
+modelo_titanic2 = me.Scorecard(excluded_vars=['PassengerId', 'Name', 'Ticket']).fit(X, y)
 
 # Mucho mejor, sin embargo, seguimos teniendo cierto desplome
 print('Caida de Gini de train a test: {:.2f}%'.format(
@@ -30,7 +30,7 @@ print('Caida de Gini de train a test: {:.2f}%'.format(
 
 # Vemos que la diferencia entre tain y test se acentúa tras añadir la variable 'Cabin'...
 # Sacamos una tercera versión excluyendo también a 'Cabin'
-modelo_titanic3 = me.scorecard(excluded_vars=['PassengerId', 'Name', 'Ticket', 'Cabin']).fit(X, y)
+modelo_titanic3 = me.Scorecard(excluded_vars=['PassengerId', 'Name', 'Ticket', 'Cabin']).fit(X, y)
 
 # Este último modelo solo tiene 3 variables.. Bueno y qué pasa?! '#minimalism' 😊
 print(modelo_titanic3.scorecard)
@@ -68,7 +68,7 @@ print('Trasportados: {}. No trasportados: {}'.format(L[1], L[0]))
 X, y = df_train.drop('Transported', axis=1), df_train.Transported.values
 
 # Tiramos un primer modelo excluyendo las variables 'PassengerId' y 'Name'
-modelo_spaceship1 = me.scorecard(excluded_vars=['PassengerId', 'Name']).fit(X, y)
+modelo_spaceship1 = me.Scorecard(excluded_vars=['PassengerId', 'Name']).fit(X, y)
 
 # Hacemos tres observaciones:
 # 1) La primera variable que está entrando, 'CryoSleep', es booleana, no hay ningún problema
@@ -83,7 +83,7 @@ me.proc_freq(X, 'CryoSleep')
 me.proc_freq(X, 'VIP')
 
 # 3) Al igual que antes nos avisa de posible sobreajuste por 'Cabin', probamos a quitarla
-modelo_spaceship2 = me.scorecard(excluded_vars=['PassengerId', 'Name', 'Cabin']).fit(X, y)
+modelo_spaceship2 = me.Scorecard(excluded_vars=['PassengerId', 'Name', 'Cabin']).fit(X, y)
 
 # En esta segunda versión ya no teneos sobreajuste ninguno... 
 # Sin embargo, podemos echar un vistazo a los p-valores a ver
@@ -97,9 +97,9 @@ features1 = [i for i in modelo_spaceship2.features if i != 'CryoSleep']
 # features2 = [i for i in modelo_spaceship2.features if i != 'Destination']
 # features3 = [i for i in modelo_spaceship2.features if i != 'CryoSleep' and i!= 'Destination']
 
-modelo_spaceship2_alt1 = me.scorecard(features=features1).fit(X, y)
-# modelo_spaceship2_alt2 = me.scorecard(features=features2).fit(X, y)
-# modelo_spaceship2_alt3 = me.scorecard(features=features3).fit(X, y)
+modelo_spaceship2_alt1 = me.Scorecard(features=features1).fit(X, y)
+# modelo_spaceship2_alt2 = me.Scorecard(features=features2).fit(X, y)
+# modelo_spaceship2_alt3 = me.Scorecard(features=features3).fit(X, y)
 
 # En las tres pruebas obtenemos Ginis muy similares... Dejamos como opción 3 la que elimina solo
 # al 'CryoSleep' ya que da un Gini ligeramente superior tanto en train como en test respecto a lo

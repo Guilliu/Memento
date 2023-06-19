@@ -7,7 +7,7 @@ import sys, numpy as np, pandas as pd, memento as me
 
 # Cargamos los datos
 df = pd.read_csv('hmeq.csv')
-
+S
 # Ponemos las columnas en minúsculas, renombramos el target a 'target_original' y añadimos un 'id'
 df.columns = ['target_original'] + [col.lower() for col in df.columns[1:]]
 df.insert(0, 'id', [str(i).zfill(4) for i in range(1, len(df)+1)])
@@ -27,7 +27,7 @@ me.proc_freq(df, 'decision', 'target')
 # Lo primero es sacar una scorecard solo con aceptados
 df_aceptados = df[df.decision == 'aprobado']
 X, y = df_aceptados.drop('target', axis=1), df_aceptados.target.values
-modelo_aceptados = me.scorecard(excluded_vars=['id', 'target_original', 'decision']).fit(X, y)
+modelo_aceptados = me.Scorecard(excluded_vars=['id', 'target_original', 'decision']).fit(X, y)
 
 # Con esta scorecard de aceptados vamos a inferir cual hubiera sido el target de los denegados
 prediction = modelo_aceptados.predict(df, keep_columns=['id'])[['id', 'scorecardpoints']]
@@ -39,7 +39,7 @@ df3, c = me.parceling(df2)
 # Teniendo los denegados ya un target inferido desarrollamos otra scorecard 
 # con una nueva partición 70-30 (usando todo: aceptados + denegados)
 X_def, y_def = df3[X.columns], df3.target_def
-modelo_def = me.scorecard(
+modelo_def = me.Scorecard(
     excluded_vars=['id', 'target_original', 'decision'], save_tables='all'
 ).fit(X_def, y_def)
 

@@ -11,7 +11,7 @@ from .princess_carolyn import *
 ####################################################################################################
 
 
-class scorecard:
+class Scorecard:
 
 
     def __init__(
@@ -176,7 +176,7 @@ class scorecard:
                 else: manual_type = ''
 
                 x = X_train[variable].values
-                frenken = autogrouping(max_groups=max_groups, 
+                frenken = Autogrouping(max_groups=max_groups, 
                 min_pct=min_pct, manual_type=manual_type).fit(x, y_train)
 
                 if len(frenken.breakpoints_num) == 0: variables_no_agrupadas_error.append(variable)
@@ -590,7 +590,7 @@ class scorecard:
         return X1
         
 
-class autogrouping:
+class Autogrouping:
 
 
     def __init__(self, max_groups=5, min_pct=0.05, manual_type=''):

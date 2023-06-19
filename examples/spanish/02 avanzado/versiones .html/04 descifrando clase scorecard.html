@@ -14579,7 +14579,7 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>En este notebook se revela paso a paso el <code>funcionamiento interno</code> de la clase scorecard en su modo automático.<br>Usamos el mismo dataset del ejemplo 01 para ir comprobando los resultados.</p>
+<p>En este notebook se revela paso a paso el <code>funcionamiento interno</code> de la clase Scorecard en su modo automático.<br>Usamos el mismo dataset del ejemplo 01 para ir comprobando los resultados.</p>
 
 </div>
 </div>
@@ -14676,7 +14676,7 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p><span style='color:blue'>Lo primero que hace la clase <code>scorecard</code> es generar una partición train-test. Por defecto hace un 70-30, estratificado en el target y con semilla</p>
+<p><span style='color:blue'>Lo primero que hace la clase <code>Scorecard</code> es generar una partición train-test. Por defecto hace un 70-30, estratificado en el target y con semilla</p>
 
 </div>
 </div>
@@ -14707,7 +14707,7 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p><span style='color:blue'>Después, aplica la clase <code>autogrouping</code> a todas las variables y guarda los objetos resultantes en un diccionario.<br> Para generar estos buckets automáticos se usan árboles de decisión</p>
+<p><span style='color:blue'>Después, aplica la clase <code>Autogrouping</code> a todas las variables y guarda los objetos resultantes en un diccionario.<br> Para generar estos buckets automáticos se usan árboles de decisión</p>
 
 </div>
 </div>
@@ -14725,7 +14725,7 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 <span class="k">for</span> <span class="n">variable</span> <span class="ow">in</span> <span class="n">variables</span><span class="p">:</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">X_train</span><span class="p">[</span><span class="n">variable</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-        <span class="n">frenken</span> <span class="o">=</span> <span class="n">me</span><span class="o">.</span><span class="n">autogrouping</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+        <span class="n">frenken</span> <span class="o">=</span> <span class="n">me</span><span class="o">.</span><span class="n">Autogrouping</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
         <span class="n">autogroupings</span><span class="p">[</span><span class="n">variable</span><span class="p">]</span> <span class="o">=</span> <span class="n">frenken</span>
     <span class="k">except</span><span class="p">:</span> <span class="n">variables_no_agrupadas_error</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">variable</span><span class="p">)</span>
 </pre></div>
@@ -14952,7 +14952,7 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p><span style='color:blue'>Antes de calcular el modelo, la clase scorecard aplica un <strong>tratamiento</strong> a las columnas</p>
+<p><span style='color:blue'>Antes de calcular el modelo, la clase Scorecard aplica un <strong>tratamiento</strong> a las columnas</p>
 
 </div>
 </div>
@@ -14981,7 +14981,7 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p><span style='color:blue'>Calculamos ya la scorecard, pero solo como <strong>tarjeta de puntuación</strong> en forma de DataFrame, el objeto tipo modelo se obtiene usando clase scorecard</p>
+<p><span style='color:blue'>Calculamos ya la scorecard, pero solo como <strong>tarjeta de puntuación</strong> en forma de DataFrame, el objeto tipo modelo se obtiene usando clase Scorecard</p>
 
 </div>
 </div>
@@ -15114,9 +15114,9 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p><span style='color:blue'>No ha salido un mal modelo, también porque este ejemplo es MUY de juguete... La clase scorecard hace todo igual que hasta ahora salvo la selección de variables: no elige las variables en función de su IV sino que se utilizan una de estas dos aproximaciones.<br>(Disclaimer: esto es algo muy teórico, no es necesario comprenderlo perfectamente ni mucho menos)</p>
+<p><span style='color:blue'>No ha salido un mal modelo, también porque este ejemplo es MUY de juguete... La clase Scorecard hace todo igual que hasta ahora salvo la selección de variables: no elige las variables en función de su IV sino que se utilizan una de estas dos aproximaciones.<br>(Disclaimer: esto es algo muy teórico, no es necesario comprenderlo perfectamente ni mucho menos)</p>
 <p>1) <strong>Método <code>forward</code> con métrica de <code>ks</code> o <code>gini</code></strong>:  En el primer paso se parte del modelo vacío, es decir el modelo que no tiene ninguna variable. Entonces para cada variable candidata (aquellas agrupadas con un IV &gt;= 0.015) se genera un modelo que tienen a esa variable como única variable del modelo, así de entre todos estos modelos univariable se mira cual sería el que da un mayor valor de la métrica (ks o gini) en el data  del train. Aquella variable cuyo modelo de el MÁXIMO valor de la métrica se selecciona. En el segundo paso se parte del conjunto que ya tiene la primera variable seleccionada del paso anterior. Ahora, se consideran TODAS las demás variables candidatas para generar TODOS los modelos de dos variables distintos posibles donde la primera es la que ya habíamos seleccionado en el paso anterior. Bien, pues de entre todos estos modelos 2-variables aquel que de el MÁXIMO valor de la métrica en el train nos indica cual es la segunda variable que seleccionamos: la que se ha añadido a la que ya teníamos para generar este modelo. Note que, si el número de variables candidatas es n, entonces en el paso 1 se consideran n modelos 1-variable y en el paso 2 se considerarían (n-1) modelos 2-variables, sin embargo, estos modelos 2-variables son más costosos desde el punto de vista computacional por tener una variable más y esto hace que los tiempos vayan aumentando en cada paso. El proceso se detiene cuando se alcanza el máximo número de pasos permitidos o cuando la métrica no mejora más de un umbral (0.20 para KS y 0.30 para Gini) la del paso anterior.</p>
-<p>2) <strong>Método <code>stepwise</code> con métrica de <code>p-valor</code> (configuración por defecto de la clase scorecard)</strong>: Se realiza un forward como el anteriormente descrito, pero con algunas modificaciones. Se empieza buscando la variable que genera el modelo 1-variable en donde esta variable tiene el p-valor más bajo (los p-valores se calculan a nivel variable, no a nivel modelo). En un segundo paso se consideran todos los modelos 2-variables donde la primera variable es la elegida en el paso anterior y la segunda es cualquiera de las candidatas restantes. Bien, pues en cada uno de  estos modelos se CALCULAN los p-valores de las dos variables y se elige el que tenga el p-valor  de la variable que se está probando más bajo. La gracia ahora es que aquí en cada paso se RECALCULAN los p-valores de TODAS las variables  involucradas en el modelo de turno, no solo el de la variable candidata a entrar si no también los p-valores del resto de variables ya seleccionadas de forma que si en algún momento alguno de ellos es superior a 0.01 (nivel de significancia metodológico) entonces esta variable SALE  del modelo. Esto ocurrirá cuando la variable que acaba de entrar está ciertamente correlada con  la que está saliendo pero por algún motivo la que entra se combina mejor con el resto de variables del modelo y tiene una aportación 'mayor' al modelo (estadísticamente hablando). El proceso se detiene cuando se alcanza el máximo número de pasos permitidos o cuando ninguna de las variables retadas tiene un p-valor inferior a 0.01 o también cuando la métrica no mejora más de un umbral (0.20 para KS y 0.30 para Gini).</p>
+<p>2) <strong>Método <code>stepwise</code> con métrica de <code>p-valor</code> (configuración por defecto de la clase Scorecard)</strong>: Se realiza un forward como el anteriormente descrito, pero con algunas modificaciones. Se empieza buscando la variable que genera el modelo 1-variable en donde esta variable tiene el p-valor más bajo (los p-valores se calculan a nivel variable, no a nivel modelo). En un segundo paso se consideran todos los modelos 2-variables donde la primera variable es la elegida en el paso anterior y la segunda es cualquiera de las candidatas restantes. Bien, pues en cada uno de  estos modelos se CALCULAN los p-valores de las dos variables y se elige el que tenga el p-valor  de la variable que se está probando más bajo. La gracia ahora es que aquí en cada paso se RECALCULAN los p-valores de TODAS las variables  involucradas en el modelo de turno, no solo el de la variable candidata a entrar si no también los p-valores del resto de variables ya seleccionadas de forma que si en algún momento alguno de ellos es superior a 0.01 (nivel de significancia metodológico) entonces esta variable SALE  del modelo. Esto ocurrirá cuando la variable que acaba de entrar está ciertamente correlada con  la que está saliendo pero por algún motivo la que entra se combina mejor con el resto de variables del modelo y tiene una aportación 'mayor' al modelo (estadísticamente hablando). El proceso se detiene cuando se alcanza el máximo número de pasos permitidos o cuando ninguna de las variables retadas tiene un p-valor inferior a 0.01 o también cuando la métrica no mejora más de un umbral (0.20 para KS y 0.30 para Gini).</p>
 
 </div>
 </div>
@@ -15163,12 +15163,12 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 
 
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
-<pre>Step 01 | 0:00:00.471339 | pv = 4.92e-32 | Gini train = 83.97% ---&gt; Feature selected: mean_concavity
-Step 02 | 0:00:00.579466 | pv = 1.38e-14 | Gini train = 96.82% ---&gt; Feature selected: worst_perimeter
-Step 03 | 0:00:00.626832 | pv = 4.31e-06 | Gini train = 98.34% ---&gt; Feature selected: worst_texture
-Step 04 | 0:00:00.722222 | pv = 5.11e-04 | Gini train = 98.92% ---&gt; Feature selected: worst_smoothness
-Step 05 | 0:00:00.837124 | pv = 1.62e-03 | Gini train = 99.34% ---&gt; Feature selected: radius_error
-Step 06 | 0:00:00.877097 | pv = 2.28e-03 | Gini train = 99.60% ---&gt; Feature selected: worst_concavity
+<pre>Step 01 | 0:00:00.482512 | pv = 4.92e-32 | Gini train = 83.97% ---&gt; Feature selected: mean_concavity
+Step 02 | 0:00:00.551811 | pv = 1.38e-14 | Gini train = 96.82% ---&gt; Feature selected: worst_perimeter
+Step 03 | 0:00:00.693677 | pv = 4.31e-06 | Gini train = 98.34% ---&gt; Feature selected: worst_texture
+Step 04 | 0:00:00.726164 | pv = 5.11e-04 | Gini train = 98.92% ---&gt; Feature selected: worst_smoothness
+Step 05 | 0:00:00.828861 | pv = 1.62e-03 | Gini train = 99.34% ---&gt; Feature selected: radius_error
+Step 06 | 0:00:00.844320 | pv = 2.28e-03 | Gini train = 99.60% ---&gt; Feature selected: worst_concavity
 ------------------------------------------------------------------------------------------------------------------------
 Ya ninguna variable tiene un p-valor &lt; 0.01, detenemos el proceso
 ------------------------------------------------------------------------------------------------------------------------

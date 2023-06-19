@@ -7,9 +7,9 @@ compute_info, features_selection, display_table_ng, reagrupa_var)
 from memento.mr_peanutbutter import (pretty_scorecard, parceling, cell_style,
 predict_pyspark, metrics_pyspark, compute_pyspark_ks, save_model,
 save_light_model, load_model, genera_punt_par, proc_freq)
-from memento.bojack import scorecard, autogrouping
+from memento.bojack import Scorecard, Autogrouping
 
-__version__ = '1.2.7'
+__version__ = '1.3.2'
 
 __all__ = (
     string_categories1, string_categories2, string_to_num,
@@ -21,6 +21,6 @@ __all__ = (
     pretty_scorecard, parceling, cell_style,
     predict_pyspark, metrics_pyspark, compute_pyspark_ks, save_model,
     save_light_model, load_model, genera_punt_par, proc_freq,
-    scorecard, autogrouping
+    Scorecard, Autogrouping
 )
 
