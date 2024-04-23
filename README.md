@@ -13,7 +13,7 @@ pip install memento-scorecard
 ```
 
 ## Documentation
-Check out the official documentation: https://guilliu.github.io
+Check out the official documentation: https://guilliu.github.io (needs update)
 
 ## Simple template
 ```python
